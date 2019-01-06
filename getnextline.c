@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2019
+** EPITECH PROJECT, 2018
 ** Project Name
 ** File description:
 ** [file description here]
@@ -7,97 +7,74 @@
 
 #include "getnextline.h"
 
-
-/*char    get_next_char(const int fd)
-{
-    func_char_t *struct_next;
-    struct_next = malloc(sizeof(struct_next));
-
-    static int  i = 0;
-    static char buffer[READ_SIZE];
-    static int  size = 0;
-
-
-    if (size == 0) {
-        if ((size = read(fd, buffer, READ_SIZE)) == 0)
-            return ('\0');
-        i = 0;
-    }
-    struct_next->my_next = buffer[i];
-    size--;
-    i++;
-    return (struct_next->my_next);
-}*/
-
 char *my_norm(int i, func_char_t *struct_next)
 {
     struct_next->line[i] = '\0';
-    if (struct_next->line[0] == '\0')
-        free(struct_next->line);
-    else
-        return(struct_next->line);
+    if (struct_next->line[0] == '\0') {
+        return (0);
+    } else
+        return (struct_next->line);
 }
 
 int my_strlen(char *str)
 {
-    int   i;
+    int i = 0;
 
-    i = 0;
     while (str[i] != '\0')
-    i = i + 1;
+        i = i + 1;
     return (i);
 }
 
-
-char    *my_realloc(char *save)
+char *my_realloc(char *str)
 {
-  int   i;
-  char  *new;
+    int i = 0;
+    char *new_str;
 
-  i = 0;
-  if (!(new = malloc(sizeof(*new) * (my_strlen(save) + READ_SIZE))))
-    return (NULL);
-  while (save[i] != '\0')
-    {
-      new[i] = save[i];
-      i = i + 1;
+    if (!(new_str = malloc(sizeof(*new_str) * (my_strlen(str) + READ_SIZE))))
+        return (0);
+    while (str[i] != '\0') {
+        new_str[i] = str[i];
+        i = i + 1;
     }
-  return (new);
+    return (new_str);
 }
 
-/*char  *get_next_line(int fd)
+char fill_my_buf(int fd)
 {
-  func_char_t *struct_next;
-  struct_next = malloc(sizeof(struct_next));
-  int k;
+    func_char_t *struct_next = malloc(sizeof(struct_next));
 
-  if ((struct_next->line = malloc(sizeof(struct_next->line) * (READ_SIZE + 1))) == NULL)
-    return (84);
-  struct_next->line[0] = '\0';
-  struct_next->my_char = get_next_char(fd);
-  k = 0;
-  while (struct_next->my_char != '\0' ) {
-      struct_next->line[k] = struct_next->my_char;
-      struct_next->my_char = get_next_char(fd);
-      k++;
-      if (k % (READ_SIZE) == 0) {
-        struct_next->line[k] = '\0';
-        if ((struct_next->line = my_realloc(struct_next->line)) == 0)
-          return (0);
-      }
-  }
-  my_norm(k, struct_next);
+    static int  counter = 0;
+    static char buf[READ_SIZE];
+    static int  size_read = 0;
+
+    if (size_read == 0) {
+        if (!(size_read = read(fd, buf, READ_SIZE)))
+            return ('\0');
+        counter = 0;
+    }
+    struct_next->my_next = buf[counter];
+    size_read--;
+    counter++;
+    return (struct_next->my_next);
 }
-*/
 
-int main(void)
+char *get_next_line(int fd)
 {
-    char *str = NULL;
-    int fd = open("map1.txt", O_RDONLY);
-    //func_char_t *struct_next;
+    func_char_t *struct_next = malloc(sizeof(struct_next));
+    int i = 0;
 
-   while  (str = get_next_line(fd))
-
-    printf("%s\n", str);
- // printf("%d\n", struct_next->size);
+    if (fd == -1)
+        return (84);
+    if (!(struct_next->line = malloc(sizeof(struct_next->line) *
+        (READ_SIZE + 1))))
+        return (0);
+    struct_next->my_char = fill_my_buf(fd);
+    for (;struct_next->my_char != '\0';) {
+        struct_next->line[i] = struct_next->my_char;
+        struct_next->my_char = fill_my_buf(fd);
+        i++;
+        if (!(struct_next->line = my_realloc(struct_next->line)))
+            return (0);
+    }
+    my_norm(i, struct_next);
 }
