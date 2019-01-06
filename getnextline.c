@@ -34,7 +34,7 @@ char *my_realloc(char *str)
         return (0);
     while (str[i] != '\0') {
         new_str[i] = str[i];
-        i = i + 1;
+        i++;
     }
     return (new_str);
 }
@@ -64,17 +64,21 @@ char *get_next_line(int fd)
     int i = 0;
 
     if (fd == -1)
-        return (84);
+        return (0);
     if (!(struct_next->line = malloc(sizeof(struct_next->line) *
         (READ_SIZE + 1))))
         return (0);
+    struct_next->line[0] = '\0';
     struct_next->my_char = fill_my_buf(fd);
     for (;struct_next->my_char != '\0';) {
         struct_next->line[i] = struct_next->my_char;
         struct_next->my_char = fill_my_buf(fd);
         i++;
-        if (!(struct_next->line = my_realloc(struct_next->line)))
-            return (0);
+        if (i % (READ_SIZE) == 0) {
+            struct_next->line[i] = '\0';
+                if (!(struct_next->line = my_realloc(struct_next->line)))
+                    return (0);
+        }
     }
     my_norm(i, struct_next);
 }

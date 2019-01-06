@@ -16,7 +16,7 @@
 #include <stdio.h>
 
 #ifndef READ_SIZE
-#define READ_SIZE (29)
+#define READ_SIZE (9)
 
 typedef struct func_char_t {
     char *new_str;
